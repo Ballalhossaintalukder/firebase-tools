@@ -19,6 +19,7 @@ import { Socket } from "net";
 const IS_WINDOWS = process.platform === "win32";
 const SUCCESS_CHAR = IS_WINDOWS ? "+" : "✔";
 const WARNING_CHAR = IS_WINDOWS ? "!" : "⚠";
+const DEBUG_CHAR = "d";
 const THIRTY_DAYS_IN_MILLISECONDS = 30 * 24 * 60 * 60 * 1000;
 
 export const envOverrides: string[] = [];
@@ -189,6 +190,29 @@ export function logLabeledWarning(
   data: LogDataOrUndefined = undefined
 ): void {
   logger[type](clc.yellow.bold(`${WARNING_CHAR}  ${label}:`), message, data);
+}
+
+/**
+ * Log an info statement with a gray bullet at the start of the line.
+ */
+export function logDebug(
+  message: string,
+  type: LogLevel = "debug",
+  data: LogDataOrUndefined = undefined
+): void {
+  logger[type](clc.blue.bold(`${DEBUG_CHAR} `), message, data);
+}
+
+/**
+ * Log an info statement with a gray bullet at the start of the line.
+ */
+export function logLabeledDebug(
+  label: string,
+  message: string,
+  type: LogLevel = "debug",
+  data: LogDataOrUndefined = undefined
+): void {
+  logger[type](clc.blue.bold(`${DEBUG_CHAR}  ${label}:`), message, data);
 }
 
 /**

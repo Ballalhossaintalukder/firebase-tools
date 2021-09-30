@@ -16,13 +16,13 @@ enum SymbolGenerator {
 }
 
 interface Options {
-  app: string|null;
-  generator: SymbolGenerator|null;
-  dryRun: boolean|null;
-  debug: boolean|null;
+  app: string | null;
+  generator: SymbolGenerator | null;
+  dryRun: boolean | null;
+  debug: boolean | null;
   // Temporary override to use a local JAR until we get the fat jar in our
   // bucket
-  localJar: string|null;
+  localJar: string | null;
 }
 
 interface JarOptions {
@@ -36,17 +36,15 @@ interface JarOptions {
 
 const SYMBOL_CACHE_ROOT_DIR = process.env.FIREBASE_CRASHLYTICS_CACHE_PATH || os.tmpdir();
 const JAR_CACHE_DIR =
-  process.env.FIREBASE_CRASHLYTICS_BUILDTOOLS_PATH || path.join(os.homedir(), ".cache", "firebase", "crashlytics", "buildtools");
+  process.env.FIREBASE_CRASHLYTICS_BUILDTOOLS_PATH ||
+  path.join(os.homedir(), ".cache", "firebase", "crashlytics", "buildtools");
 const JAR_VERSION = "2.7.1";
 const JAR_URL = `https://dl.google.com/android/maven2/com/google/firebase/firebase-crashlytics-buildtools/${JAR_VERSION}/firebase-crashlytics-buildtools-${JAR_VERSION}.jar`;
 
 export default new Command("crashlytics:symbols:upload <symbol-files...>")
   .description("Upload symbols for native code, to symbolicate stack traces.")
   .option("--app <app_id>", "the app id of your Firebase app")
-  .option(
-    "--generator [breakpad|csym]",
-    "the symbol generator being used, defaults to breakpad."
-  )
+  .option("--generator [breakpad|csym]", "the symbol generator being used, defaults to breakpad.")
   .option("--dry-run", "generate symbols without uploading them")
   .option("--debug", "print debug output and logging from the underlying uploader tool")
   .option("--local-jar <path>", "override the fetched jar with one on the filesystem")
@@ -65,7 +63,13 @@ export default new Command("crashlytics:symbols:upload <symbol-files...>")
       jarFile,
       app,
       generator,
-      cachePath: path.join(SYMBOL_CACHE_ROOT_DIR, `crashlytics-${uuid.v4()}`, "nativeSymbols", app, generator),
+      cachePath: path.join(
+        SYMBOL_CACHE_ROOT_DIR,
+        `crashlytics-${uuid.v4()}`,
+        "nativeSymbols",
+        app,
+        generator
+      ),
       symbolFile: "",
       generate: true,
     };
@@ -118,18 +122,16 @@ function getSymbolGenerator(options: Options): SymbolGenerator {
 async function downloadBuiltoolsJar(debug: boolean): Promise<string> {
   const jarPath = path.join(JAR_CACHE_DIR, `crashlytics-buildtools-${JAR_VERSION}.jar`);
   if (fs.existsSync(jarPath)) {
-    if (debug) {
-      utils.logBullet(`Buildtools Jar already downloaded at ${jarPath}`);
-    }
+    utils.logDebug(`Buildtools Jar already downloaded at ${jarPath}`);
     return jarPath;
   }
   // If the Jar cache directory exists, but the jar for the current version
   // doesn't, then we're running the CLI with a new Jar version and we can
   // delete the old version.
   if (fs.existsSync(JAR_CACHE_DIR)) {
-    if (debug) {
-      utils.logBullet(`Deleting Jar cache at ${JAR_CACHE_DIR} because the CLI was run with a newer Jar version`);
-    }
+    utils.logDebug(
+      `Deleting Jar cache at ${JAR_CACHE_DIR} because the CLI was run with a newer Jar version`
+    );
     fs.rmdirSync(JAR_CACHE_DIR);
   }
   utils.logBullet("Downloading buildtools.jar to " + jarPath);
@@ -178,13 +180,13 @@ function runJar(args: string[], debug: boolean): string {
   // between the buildtools.jar and the CLI, we just pull the logs out of the
   // jar output.
   if (!debug) {
-    var logRegex = /(Generated symbol file.*$)/m;
-    var matched  = (outputs.stdout?.toString() || "").match(logRegex);
+    let logRegex = /(Generated symbol file.*$)/m;
+    let matched = (outputs.stdout?.toString() || "").match(logRegex);
     if (matched) {
       return matched[1];
     }
-    var logRegex = /(Crashlytics symbol file uploaded successfully.*$)/m;
-    var matched  = (outputs.stdout?.toString() || "").match(logRegex);
+    logRegex = /(Crashlytics symbol file uploaded successfully.*$)/m;
+    matched = (outputs.stdout?.toString() || "").match(logRegex);
     if (matched) {
       return matched[1];
     }
