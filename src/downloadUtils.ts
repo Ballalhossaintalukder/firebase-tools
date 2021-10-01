@@ -1,10 +1,7 @@
 import { URL } from "url";
-import * as crypto from "crypto";
 import * as fs from "fs-extra";
-import * as path from "path";
 import * as ProgressBar from "progress";
 import * as tmp from "tmp";
-import * as unzipper from "unzipper";
 
 import { Client } from "./apiv2";
 import { FirebaseError } from "./error";

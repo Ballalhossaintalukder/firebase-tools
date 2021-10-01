@@ -8,7 +8,6 @@ import { Command } from "../command";
 import { FirebaseError } from "../error";
 import * as utils from "../utils";
 import * as downloadUtils from "../downloadUtils";
-import { util } from "chai";
 
 enum SymbolGenerator {
   breakpad = "breakpad",
@@ -54,7 +53,7 @@ export default new Command("crashlytics:symbols:upload <symbol-files...>")
     const dryRun = !!options.dryRun;
     const debug = !!options.debug;
 
-    let jarFile = await downloadBuiltoolsJar(debug);
+    let jarFile = await downloadBuiltoolsJar();
     if (options.localJar) {
       jarFile = options.localJar;
     }
@@ -119,7 +118,7 @@ function getSymbolGenerator(options: Options): SymbolGenerator {
   return options.generator;
 }
 
-async function downloadBuiltoolsJar(debug: boolean): Promise<string> {
+async function downloadBuiltoolsJar(): Promise<string> {
   const jarPath = path.join(JAR_CACHE_DIR, `crashlytics-buildtools-${JAR_VERSION}.jar`);
   if (fs.existsSync(jarPath)) {
     utils.logDebug(`Buildtools Jar already downloaded at ${jarPath}`);
