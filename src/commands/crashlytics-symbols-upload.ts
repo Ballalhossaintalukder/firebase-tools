@@ -46,7 +46,7 @@ export default new Command("crashlytics:symbols:upload <symbol-files...>")
   .option("--generator [breakpad|csym]", "the symbol generator being used, defaults to breakpad.")
   .option("--dry-run", "generate symbols without uploading them")
   .option("--debug", "print debug output and logging from the underlying uploader tool")
-  .option("--local-jar <path>", "override the fetched jar with one on the filesystem")
+  .option("--local-jar <path>", "override the fetched internal buildtools jar with one on the filesystem")
   .action(async (symbolFiles: string[], options: Options) => {
     const app = getGoogleAppID(options) || "";
     const generator = getSymbolGenerator(options);
