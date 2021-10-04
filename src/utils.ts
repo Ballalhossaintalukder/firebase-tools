@@ -193,29 +193,6 @@ export function logLabeledWarning(
 }
 
 /**
- * Log an info statement with a gray bullet at the start of the line.
- */
-export function logDebug(
-  message: string,
-  type: LogLevel = "debug",
-  data: LogDataOrUndefined = undefined
-): void {
-  logger[type](clc.blue.bold(`${DEBUG_CHAR} `), message, data);
-}
-
-/**
- * Log an info statement with a gray bullet at the start of the line.
- */
-export function logLabeledDebug(
-  label: string,
-  message: string,
-  type: LogLevel = "debug",
-  data: LogDataOrUndefined = undefined
-): void {
-  logger[type](clc.blue.bold(`${DEBUG_CHAR}  ${label}:`), message, data);
-}
-
-/**
  * Return a promise that rejects with a FirebaseError.
  */
 export function reject(message: string, options?: any): Promise<never> {

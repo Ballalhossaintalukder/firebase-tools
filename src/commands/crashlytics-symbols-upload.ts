@@ -5,9 +5,10 @@ import * as spawn from "cross-spawn";
 import * as uuid from "uuid";
 
 import { Command } from "../command";
-import { FirebaseError } from "../error";
-import * as utils from "../utils";
 import * as downloadUtils from "../downloadUtils";
+import { FirebaseError } from "../error";
+import { logger } from "../logger";
+import * as utils from "../utils";
 
 enum SymbolGenerator {
   breakpad = "breakpad",
@@ -40,13 +41,15 @@ const JAR_CACHE_DIR =
 const JAR_VERSION = "2.7.1";
 const JAR_URL = `https://dl.google.com/android/maven2/com/google/firebase/firebase-crashlytics-buildtools/${JAR_VERSION}/firebase-crashlytics-buildtools-${JAR_VERSION}.jar`;
 
-export default new Command("crashlytics:symbols:upload <symbol-files...>")
+export default new Command("crashlytics:symbols:upload <symbolFiles...>")
   .description("Upload symbols for native code, to symbolicate stack traces.")
-  .option("--app <app_id>", "the app id of your Firebase app")
+  .option("--app <appID>", "the app id of your Firebase app")
   .option("--generator [breakpad|csym]", "the symbol generator being used, defaults to breakpad.")
   .option("--dry-run", "generate symbols without uploading them")
   .option("--debug", "print debug output and logging from the underlying uploader tool")
-  .option("--local-jar <path>", "override the fetched internal buildtools jar with one on the filesystem")
+  .option(
+    "--local-jar <path>",
+    "override the fetched internal buildtools jar with one on the filesystem")
   .action(async (symbolFiles: string[], options: Options) => {
     const app = getGoogleAppID(options) || "";
     const generator = getSymbolGenerator(options);
@@ -121,14 +124,14 @@ function getSymbolGenerator(options: Options): SymbolGenerator {
 async function downloadBuiltoolsJar(): Promise<string> {
   const jarPath = path.join(JAR_CACHE_DIR, `crashlytics-buildtools-${JAR_VERSION}.jar`);
   if (fs.existsSync(jarPath)) {
-    utils.logDebug(`Buildtools Jar already downloaded at ${jarPath}`);
+    logger.debug(`Buildtools Jar already downloaded at ${jarPath}`);
     return jarPath;
   }
   // If the Jar cache directory exists, but the jar for the current version
   // doesn't, then we're running the CLI with a new Jar version and we can
   // delete the old version.
   if (fs.existsSync(JAR_CACHE_DIR)) {
-    utils.logDebug(
+    logger.debug(
       `Deleting Jar cache at ${JAR_CACHE_DIR} because the CLI was run with a newer Jar version`
     );
     fs.rmdirSync(JAR_CACHE_DIR);
