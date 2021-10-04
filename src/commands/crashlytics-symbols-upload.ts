@@ -49,7 +49,8 @@ export default new Command("crashlytics:symbols:upload <symbolFiles...>")
   .option("--debug", "print debug output and logging from the underlying uploader tool")
   .option(
     "--local-jar <path>",
-    "override the fetched internal buildtools jar with one on the filesystem")
+    "override the fetched internal buildtools jar with one on the filesystem"
+  )
   .action(async (symbolFiles: string[], options: Options) => {
     const app = getGoogleAppID(options) || "";
     const generator = getSymbolGenerator(options);
