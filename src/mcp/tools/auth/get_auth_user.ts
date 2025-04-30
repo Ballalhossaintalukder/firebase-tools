@@ -16,20 +16,15 @@ export const get_auth_user = tool(
       title: "Get information about 1 user.",
       readOnlyHint: true,
     },
+    _meta: {
+      requiresAuth: true,
+      requiresProject: true,
+    },
   },
   async ({ email, phoneNumber, uid }, { projectId }) => {
     if (email === undefined && phoneNumber === undefined && uid === undefined) {
       return mcpError(`No user identifier supplied in get_auth_user tool`);
     }
-    if (!projectId) return mcpError(`No current project detected.`);
-    try {
-      return toContent(await findUser(projectId, email, phoneNumber, uid));
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        return mcpError(err.message);
-      } else {
-        return mcpError("unknown error");
-      }
-    }
+    return toContent(await findUser(projectId!, email, phoneNumber, uid));
   },
 );
